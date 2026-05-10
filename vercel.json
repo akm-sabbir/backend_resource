@@ -3,7 +3,7 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/(.*)", "destination": "/api" }
-  ]
+  ],
   "functions": {
     "api/*.js": {
       "includeFiles": "pdf-files/**"
