@@ -35,6 +35,11 @@ app.use(cors({
   origin: ['http://localhost:1234/*', 'http://127.0.0.1:1234/*', "*"] // Allow only your React app
 }));
 // Serve PDF files statically
+
+app.get('/', (req, res) => {
+  res.send('Backend is running!');
+});
+
 app.use("/files", express.static(FILE_DIR));
 app.set('etag', false);
 
@@ -119,3 +124,7 @@ app.use((req, res) => {
 app.listen(5000, '0.0.0.0', () => {
   console.log('Server running on port 5000');
 });
+
+
+// Important: Vercel needs the app exported
+module.exports = app; 
