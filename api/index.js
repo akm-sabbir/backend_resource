@@ -7,7 +7,7 @@ const app = express();
 const PORT = 5000;
 const PDF_FILE_DIR = "pdf-files"
 // Folder containing PDFs
-const FILE_DIR = path.join(__dirname, PDF_FILE_DIR);
+const FILE_DIR = path.join(process.cwd(), PDF_FILE_DIR);
 // List of allowed domains
 const allowedOrigins = [
   'http://localhost:3000',      // Your local dev environment
