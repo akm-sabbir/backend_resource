@@ -13,7 +13,8 @@ const allowedOrigins = [
   'http://localhost:3000',      // Your local dev environment
   'https://yourproduction.com', // Your live site
   'https://another-domain.com',
-  'http://localhost:1234'
+  'http://localhost:1234',
+  'https://vercel.com'
 ];
 
 const corsOptions = {
