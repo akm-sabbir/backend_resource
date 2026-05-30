@@ -58,8 +58,8 @@ app.set('etag', false);
 app.get("/api/files", async (req, res) => {
 	 
   try {
-	  
-    const files = await fs.promises.readdir(FILE_DIR);
+	NEW_FILE_DIR = path.join(FILE_DIR, "general_files");
+    const files = await fs.promises.readdir(NEW_FILE_DIR);
 
     const pdfFiles = files
       .filter((file) => file.toLowerCase().endsWith(".pdf"))
@@ -83,15 +83,27 @@ app.get("/api/files", async (req, res) => {
 
   Optional endpoint if you want metadata
 */
-app.get("/api/files/:name", async (req, res) => {
+app.get("/api/resources/files", async (req, res) => {
   try {
     const fileName = req.params.name;
+    const { semester, course_name, file_name} = req.query;
+    NEW_FILE_DIR = path.join(FILE_DIR, "general_files");
 	 //const filePath = path.join(__dirname, 'pdf-files', fileName);
-	 const filePath = path.join(FILE_DIR, fileName);
+	 //const filePath = path.join(NEW_FILE_DIR, fileName);
 	
     //const fullPath = path.join(FILE_DIR, fileName);
+    const targetFilePath = path.join(FILE_DIR, semester.trim(), course_name.trim(), file_name.trim());
 
-    const stats = await fs.promises.stat(filePath);
+    // Security Check: Block directory traversal hacking attempts
+    if (!targetFilePath.startsWith(FILE_DIR)) {
+      return res.status(403).send('Access denied: Invalid directory layout path.');
+    }
+
+    if (!fs.existsSync(targetFilePath)) {
+      return res.status(404).send('File not found on this server.');
+    }
+
+    const stats = await fs.promises.stat(targetFilePath);//await fs.promises.stat(filePath);
 
     /*res.json({
       name: fileName,
@@ -102,6 +114,7 @@ app.get("/api/files/:name", async (req, res) => {
 	
     //const fileBuffer = fs.readFileSync(filePath);
     //const base64Data = fileBuffer.toString('base64');
+    console.log("Target File:, ", targetFilePath);
 	res.set('Cache-Control', 'no-store');
     /*res.json({
         success: true,
@@ -110,11 +123,54 @@ app.get("/api/files/:name", async (req, res) => {
         data: base64Data // The encoded file
     });*/
 	res.setHeader('Content-Type', 'application/pdf');
-	res.sendFile(filePath);
+	res.sendFile(targetFilePath);//filePath);
   } catch (error) {
     res.status(404).json({
       error: "File not found"
     });
+  }
+});
+
+/**
+ * GET Route optimized for Inline Browser Previews
+ */
+app.get('/api/resources/list', async (req, res) => {
+  // 1. Unpack parameters from req.query (GET parameters) instead of req.body
+  const { semester, course_name} = req.query;
+    console.log("semester name and course name", semester.trim(), course_name.trim());
+  if (!semester || !course_name) {
+    return res.status(400).send('Missing required fields: semester, course_name, and file_name.');
+  }
+
+  try {
+    const targetFilePath = path.join(FILE_DIR, semester.trim(), course_name.trim());
+
+    // Security Check: Block directory traversal hacking attempts
+    if (!targetFilePath.startsWith(FILE_DIR)) {
+      return res.status(403).send('Access denied: Invalid directory layout path.');
+    }
+
+    if (!fs.existsSync(targetFilePath)) {
+      return res.status(404).send('File not found on this server.');
+    }
+
+    // 2. OPTIMIZATION RULE: Force the browser to render the file "inline" in the window
+    //res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(file_name)}"`);
+    const files = await fs.promises.readdir(targetFilePath);
+
+    const pdfFiles = files.filter((file) => file.toLowerCase().endsWith(".pdf"))
+      .map((file) => ({
+        name: file,
+        url: `/files/${encodeURIComponent(file)}`
+      }));
+	res.set('Cache-Control', 'no-store');
+    res.json(pdfFiles);
+    // 3. Stream the file asset. Express auto-configures Content-Type (e.g. application/pdf)
+    //return res.sendFile(targetFilePath);
+
+  } catch (error) {
+        console.error('File retrieval crash:', error);
+        return res.status(500).send('Internal server error.');
   }
 });
 

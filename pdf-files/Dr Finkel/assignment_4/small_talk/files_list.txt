@@ -1,0 +1,2 @@
+Makefile
+small_talk.st

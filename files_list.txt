@@ -1,0 +1,9 @@
+.env.local
+.gitignore
+MBANavbar.jsx
+file_list_generation.py
+index.html
+package-lock.json
+package.json
+server.js
+vercel.json

@@ -2,7 +2,10 @@
   "version": 2,
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/api" }
+    { "source": "/(.*)", "destination": "/api" },
+	{ "source": "api/resources/(.*)", "destination": "/api" },
+	{ "source": "api/resources/list/:semester/:course", "destination": "/api" },
+	{ "source": "api/resources/files/:semester/:course/:filename", "destination": "/api" }
   ],
   "functions": {
     "api/*.js": {

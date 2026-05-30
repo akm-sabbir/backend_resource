@@ -1,2 +1,6 @@
 .vercel
 .env*.local
+dist/
+node_modules/
+.git/
+build/

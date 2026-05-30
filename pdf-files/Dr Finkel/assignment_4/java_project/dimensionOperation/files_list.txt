@@ -1,0 +1,10 @@
+.Makefile.swp
+Makefile
+base_dimension.java
+constant_.java
+distance_dimension.java
+main_.java
+mixed_dimension.java
+pair.java
+time_dimension.java
+weight_dimension.java

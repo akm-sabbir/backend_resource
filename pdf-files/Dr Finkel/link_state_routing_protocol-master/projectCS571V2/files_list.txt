@@ -1,0 +1,16 @@
+Makefile
+a.exe.stackdump
+client.h
+configuration.txt
+errorHandler.cpp
+errorHandler.o
+executor.exe.stackdump
+main.cpp
+main.o
+server.cpp
+server.o
+structure.h
+test.cpp
+timeout.cpp
+token.cpp
+token.o
